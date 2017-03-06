@@ -7,7 +7,7 @@
 //
 
 #import "WWZTCPSocketClient.h"
-#import "GCDAsyncSocket.h"
+#import <CocoaAsyncSocket/GCDAsyncSocket.h>
 
 #ifdef DEBUG // 调试
 
