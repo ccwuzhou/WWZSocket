@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "WWZSocket"
-  s.version      = "1.1.0"
+  s.version      = "1.1.1"
   s.summary      = "A short description of WWZSocket."
 
   # s.description  = <<-DESC
@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://github.com/ccwuzhou/WWZSocket.git", :tag => "#{s.version}" }
 
-  s.source_files  = "WWZSocket/WWZSocket/*.{h,m}"
+  s.source_files  = "WWZSocket/*.{h,m}"
 
   # s.public_header_files = "WWZSocket/WWZSocket.h"
 

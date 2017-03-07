@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		12132155157635C32682893E /* libPods-WWZSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 33C1B78A36A6A1CACA4672AD /* libPods-WWZSocket.a */; };
 		B094F1D01E6E864100D5380E /* WWZSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1CE1E6E864100D5380E /* WWZSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B094F1DE1E6E865500D5380E /* WWZSocketRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1D61E6E865500D5380E /* WWZSocketRequest.h */; };
 		B094F1DF1E6E865500D5380E /* WWZSocketRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B094F1D71E6E865500D5380E /* WWZSocketRequest.m */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		33C1B78A36A6A1CACA4672AD /* libPods-WWZSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WWZSocket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B094F1CB1E6E864100D5380E /* WWZSocket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WWZSocket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B094F1CE1E6E864100D5380E /* WWZSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WWZSocket.h; sourceTree = "<group>"; };
 		B094F1CF1E6E864100D5380E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -30,6 +32,8 @@
 		B094F1DB1E6E865500D5380E /* WWZTCPSocketServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WWZTCPSocketServer.m; sourceTree = "<group>"; };
 		B094F1DC1E6E865500D5380E /* WWZUDPSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WWZUDPSocket.h; sourceTree = "<group>"; };
 		B094F1DD1E6E865500D5380E /* WWZUDPSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WWZUDPSocket.m; sourceTree = "<group>"; };
+		D612164F108D83E93B2C92AA /* Pods-WWZSocket.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WWZSocket.release.xcconfig"; path = "Pods/Target Support Files/Pods-WWZSocket/Pods-WWZSocket.release.xcconfig"; sourceTree = "<group>"; };
+		DCEF8F416FBAB8FB758C6470 /* Pods-WWZSocket.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WWZSocket.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WWZSocket/Pods-WWZSocket.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,17 +41,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12132155157635C32682893E /* libPods-WWZSocket.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		11D3DE58138F2B55D9299F44 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				33C1B78A36A6A1CACA4672AD /* libPods-WWZSocket.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B094F1C11E6E864000D5380E = {
 			isa = PBXGroup;
 			children = (
 				B094F1CD1E6E864100D5380E /* WWZSocket */,
 				B094F1CC1E6E864100D5380E /* Products */,
+				B3D667AE048B815B126F23E5 /* Pods */,
+				11D3DE58138F2B55D9299F44 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,6 +91,15 @@
 			path = WWZSocket;
 			sourceTree = "<group>";
 		};
+		B3D667AE048B815B126F23E5 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DCEF8F416FBAB8FB758C6470 /* Pods-WWZSocket.debug.xcconfig */,
+				D612164F108D83E93B2C92AA /* Pods-WWZSocket.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -98,10 +122,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B094F1D31E6E864100D5380E /* Build configuration list for PBXNativeTarget "WWZSocket" */;
 			buildPhases = (
+				7821A977B4CC0DC7B0BC3382 /* [CP] Check Pods Manifest.lock */,
 				B094F1C61E6E864100D5380E /* Sources */,
 				B094F1C71E6E864100D5380E /* Frameworks */,
 				B094F1C81E6E864100D5380E /* Headers */,
 				B094F1C91E6E864100D5380E /* Resources */,
+				5F96923E24A7C08C1F70F1C3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -154,6 +180,39 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5F96923E24A7C08C1F70F1C3 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WWZSocket/Pods-WWZSocket-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7821A977B4CC0DC7B0BC3382 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B094F1C61E6E864100D5380E /* Sources */ = {
@@ -268,6 +327,7 @@
 		};
 		B094F1D41E6E864100D5380E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DCEF8F416FBAB8FB758C6470 /* Pods-WWZSocket.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
@@ -286,6 +346,7 @@
 		};
 		B094F1D51E6E864100D5380E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D612164F108D83E93B2C92AA /* Pods-WWZSocket.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
