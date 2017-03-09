@@ -18,73 +18,78 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
  *  设置socket及协议格式参数
  *
  *  @param tcpSocket WWZTCPSocketClient
- *  @param app_param app default is "wifi"
- *  @param co_param  co default is "kjd"
+ *  @param app_param app default is "wwz"
+ *  @param co_param  co default is "wwz"
  */
-+ (void)setTcpSocket:(WWZTCPSocketClient *)tcpSocket
-            appParam:(NSString *)app_param
+- (void)setTcpSocket:(WWZTCPSocketClient *)tcpSocket
+           app_param:(NSString *)app_param
             co_param:(NSString *)co_param;
 
 
 /**
  *  SOCKET请求
- *  @param apiName      接口名
+ *  @param api          接口名
  *  @param parameters   参数：json格式的字典
  *  @param success      success回调
  *  @param failure      failure回调
  */
-+ (void)SOCKET:(NSString *)apiName
-    parameters:(id)parameters
-       success:(void(^)(id result))success
-       failure:(void(^)(NSError *error))failure;
+- (void)request:(NSString *)api
+     parameters:(id)parameters
+        success:(void(^)(id result))success
+        failure:(void(^)(NSError *error))failure;
 /**
  *  SOCKET请求
  *
- *  @param tcpSocket    WWZTCPSocketClient
- *  @param apiName      接口名
+ *  @param socket       WWZTCPSocketClient
+ *  @param api          接口名
  *  @param parameters   参数：json格式的字典
  *  @param success      success回调
  *  @param failure      failure回调
  */
-+ (void)SOCKET:(WWZTCPSocketClient *)tcpSocket
-       apiName:(NSString *)apiName
-    parameters:(id)parameters
-       success:(void(^)(id result))success
-       failure:(void(^)(NSError *error))failure;
+- (void)request:(WWZTCPSocketClient *)socket
+            api:(NSString *)api
+     parameters:(id)parameters
+        success:(void(^)(id result))success
+        failure:(void(^)(NSError *error))failure;
 
 /**
  *  SOCKET请求
  *
- *  @param apiName      接口名
+ *  @param api          接口名
  *  @param message      发送的完整消息指令
  *  @param success      success回调
  *  @param failure      failure回调
  */
-+ (void)SOCKET:(NSString *)apiName
-       message:(NSString *)message
-       success:(void(^)(id result))success
-       failure:(void(^)(NSError *error))failure;
-
+- (void)request:(NSString *)api
+        message:(NSString *)message
+        success:(void(^)(id result))success
+        failure:(void(^)(NSError *error))failure;
 /**
  *  SOCKET请求
  *
- *  @param tcpSocket    WWZTCPSocketClient
- *  @param apiName      接口名
+ *  @param socket       WWZTCPSocketClient
+ *  @param api          接口名
  *  @param message      发送的完整消息指令
  *  @param success      success回调
  *  @param failure      failure回调
  */
-+ (void)SOCKET:(WWZTCPSocketClient *)tcpSocket
-       apiName:(NSString *)apiName
-       message:(NSString *)message
-       success:(void(^)(id result))success
-       failure:(void(^)(NSError *error))failure;
-
+- (void)request:(WWZTCPSocketClient *)socket
+            api:(NSString *)api
+        message:(NSString *)message
+        success:(void(^)(id result))success
+        failure:(void(^)(NSError *error))failure;
 /**
- *  设置请求超时时间
+ *  SOCKET请求
  *
- *  @param timeOut 超时时间， default is 10s
+ *  @param socket       WWZTCPSocketClient
+ *  @param api          接口名
+ *  @param data         发送的完整消息指令
+ *  @param success      success回调
+ *  @param failure      failure回调
  */
-+ (void)setSocketRequsetTimeOut:(NSTimeInterval)timeOut;
-
+- (void)request:(WWZTCPSocketClient *)socket
+            api:(NSString *)api
+           data:(NSData *)data
+        success:(void(^)(id result))success
+        failure:(void(^)(NSError *error))failure;
 @end

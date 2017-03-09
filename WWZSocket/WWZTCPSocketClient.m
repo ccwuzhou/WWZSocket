@@ -23,8 +23,6 @@
 // 主线程
 #define WZ_MAIN_GCD(block) dispatch_async(dispatch_get_main_queue(),block)
 
-NSString *const ERROR_NOTI_NAME = @"wwz_error_noti";
-
 @interface WWZTCPSocketClient ()<GCDAsyncSocketDelegate>
 
 @property (nonatomic, strong) GCDAsyncSocket *socket;
@@ -35,40 +33,21 @@ NSString *const ERROR_NOTI_NAME = @"wwz_error_noti";
 
 @synthesize isConnecting = _isConnecting;
 
-static int const connectTimeOut = 4;
+static int const WWZ_TCPSOCKET_CONNECT_TIMEOUT = 4;
 
-static int const kReadTimeOut = -1;
+static int const WWZ_TCPSOCKET_READ_TIMEOUT = -1;
 
-static int const kWriteDataTag = 1;
+static int const WWZ_TCPSOCKET_WRITE_TAG = 1;
 
-static int const kReadDataTag = 0;
+static int const WWZ_TCPSOCKET_READ_TAG = 0;
 
 
-- (instancetype)initWithDelegate:(id<WWZTCPSocketDelegate>)delegate endKey:(NSString *)endKey
-{
-    self = [self init];
-    if (self) {
-        
-        self.tcpDelegate = delegate;
-        
-        if (endKey) {
-            
-            _endKey = endKey;
-        }
-    }
-    return self;
+- (void)setEndKeyString:(NSString *)endKeyString{
+    
+    _endKeyString = endKeyString;
+    
+    self.endKeyData = [endKeyString dataUsingEncoding:NSUTF8StringEncoding];
 }
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        
-//        _endKey = @"\n";
-    }
-    return self;
-}
-
 
 #pragma mark - 连接socket
 - (void)connectToHost:(NSString*)host onPort:(uint16_t)port{
@@ -79,7 +58,7 @@ static int const kReadDataTag = 0;
     
     NSError *error = nil;
     
-    if (![self.socket connectToHost:[self p_convertedHostFromHost:host] onPort:port withTimeout:connectTimeOut error:&error]||error) {
+    if (![self.socket connectToHost:[self p_convertedHostFromHost:host] onPort:port withTimeout:WWZ_TCPSOCKET_CONNECT_TIMEOUT error:&error]||error) {
         WZLog(@"connect fail error：%@", error);
     }
 }
@@ -116,7 +95,7 @@ static int const kReadDataTag = 0;
     if (!data||data.length == 0) {
         return;
     }
-    [self.socket writeData:data withTimeout:-1 tag:kWriteDataTag];
+    [self.socket writeData:data withTimeout:-1 tag:WWZ_TCPSOCKET_WRITE_TAG];
 }
 #pragma mark - GCDAsyncSocketDelegate
 #pragma mark - 连接成功回调
@@ -125,12 +104,12 @@ static int const kReadDataTag = 0;
     WZLog(@"+++connect to server success+++");
     
     _isConnecting = NO;
-
-    WZ_MAIN_GCD(^{
-        if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didConnectToHost:port:)]) {
+    
+    if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didConnectToHost:port:)]) {
+        WZ_MAIN_GCD(^{
             [self.tcpDelegate tcpSocket:self didConnectToHost:host port:port];
-        }
-    });
+        });
+    }
     
     [self p_readData];
 
@@ -142,11 +121,12 @@ static int const kReadDataTag = 0;
     
     _isConnecting = NO;
     
-    WZ_MAIN_GCD(^{
-        if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didDisconnectWithError:)]) {
+    if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didDisconnectWithError:)]) {
+        WZ_MAIN_GCD(^{
             [self.tcpDelegate tcpSocket:self didDisconnectWithError:err];
-        }
-    });
+        });
+    }
+    
 }
 #pragma mark - 写成功
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag{
@@ -163,69 +143,60 @@ static int const kReadDataTag = 0;
         
         return;
     }
-    if (_endKey) {
+    if (self.endKeyData) {
         
-        if (data.length <= self.endDataKey.length) {
+        if (data.length <= self.endKeyData.length) {
             
             [self p_readData];
             
             return;
         }
         // 删掉最后self.endDataKey'\n'
-        data = [data subdataWithRange:NSMakeRange(0, data.length-self.endDataKey.length)];
+        data = [data subdataWithRange:NSMakeRange(0, data.length-self.endKeyData.length)];
     }
     
     // data==>string
-    NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSString *readString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     
     WZLog(@"+++++read data length==>%d+++++", (int)data.length);
     
-    if (!text||text.length == 0) {
+    if (!readString||readString.length == 0) {// data转string失败
         
         if (data.length > 0) {
             
-            WZ_MAIN_GCD(^{
+            if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didReadResult:)]) {
                 
-                if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didReadResult:)]) {
+                WZ_MAIN_GCD(^{
+                    
                     [self.tcpDelegate tcpSocket:self didReadResult:data];
-                }
-            });
+                });
+            }
         }
         
         [self p_readData];
         return;
     }
-    id jsonResult = [self p_jsonSerializationWithString:text];
+
+    NSError *error = nil;
+    id result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
     
-    NSString *retcode = @"-1";
-    
-    NSString *retmsg = @"";
-    
-    if ([jsonResult isKindOfClass:[NSError class]]) {// json 解析失败
+    if (error) {// json解析失败
         
-        retmsg = [[[(NSError *)jsonResult userInfo] allValues] lastObject];
-        WZ_MAIN_GCD(^{
-        
-            [[NSNotificationCenter defaultCenter] postNotificationName:ERROR_NOTI_NAME object:jsonResult userInfo:@{retcode : retmsg}];
-        });
-        
-    }else if (!jsonResult||(![jsonResult isKindOfClass:[NSDictionary class]]&&![jsonResult isKindOfClass:[NSArray class]])){// 不存在或不是字典或数组
-        
-        retmsg = @"not json format";
-        
-        WZ_MAIN_GCD(^{
-         
-            [[NSNotificationCenter defaultCenter] postNotificationName:ERROR_NOTI_NAME object:jsonResult userInfo:@{retcode : retmsg}];
-        });
-        
-    }else{// 有效数据
-        
-        WZ_MAIN_GCD(^{
+        if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didReadResult:)]) {
             
-            if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didReadResult:)]) {
-                [self.tcpDelegate tcpSocket:self didReadResult:jsonResult];
-            }
-        });
+            WZ_MAIN_GCD(^{
+                [self.tcpDelegate tcpSocket:self didReadResult:readString];
+            });
+        }
+    }else{// json解析成功
+        
+        if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didReadResult:)]) {
+            
+            WZ_MAIN_GCD(^{
+                
+                [self.tcpDelegate tcpSocket:self didReadResult:result];
+            });
+        }
     }
     // 读完当前数据后继续读数
     [self p_readData];
@@ -235,27 +206,11 @@ static int const kReadDataTag = 0;
  */
 - (void)p_readData{
 
-    if (_endKey) {
+    if (self.endKeyData) {
         // 读到'\n'
-        [self.socket readDataToData:self.endDataKey withTimeout:kReadTimeOut tag:kReadDataTag];
+        [self.socket readDataToData:self.endKeyData withTimeout:WWZ_TCPSOCKET_READ_TIMEOUT tag:WWZ_TCPSOCKET_READ_TAG];
     }else{
-        [self.socket readDataWithTimeout:kReadTimeOut tag:kReadDataTag];
-    }
-}
-
-/**
- *  json string ==> 字典
- */
-- (id)p_jsonSerializationWithString:(NSString *)jsonString{
-    
-    NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error = nil;
-    // 转字典
-    id result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-    if (error) {
-        return error;
-    }else{
-        return result;
+        [self.socket readDataWithTimeout:WWZ_TCPSOCKET_READ_TIMEOUT tag:WWZ_TCPSOCKET_READ_TAG];
     }
 }
 
@@ -323,8 +278,6 @@ static int const kReadDataTag = 0;
     return self.socket.isConnected;
 }
 
-- (NSData *)endDataKey{
-    
-    return [self.endKey dataUsingEncoding:NSUTF8StringEncoding];
-}
+
+
 @end

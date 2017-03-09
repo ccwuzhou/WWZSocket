@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString *const ERROR_NOTI_NAME;// 收到错误数据通知
-
 @class WWZTCPSocketClient;
 
 @protocol WWZTCPSocketDelegate <NSObject>
@@ -40,7 +38,9 @@ extern NSString *const ERROR_NOTI_NAME;// 收到错误数据通知
 /**
  *  读取结束字符
  */
-@property (nonatomic, copy) NSString *endKey;
+@property (nonatomic, copy) NSString *endKeyString;
+
+@property (nonatomic, strong) NSData *endKeyData;
 
 /**
  *  正在连接中
@@ -51,12 +51,6 @@ extern NSString *const ERROR_NOTI_NAME;// 收到错误数据通知
  *  socket连接状态
  */
 @property (nonatomic, assign, readonly) BOOL isConnected;
-
-/**
- *  初始化
- *  @param endDataKey 读取结束字符, default is nill
- */
-- (instancetype)initWithDelegate:(id<WWZTCPSocketDelegate>)delegate endKey:(NSString *)endKey;
 
 /**
  *  connect socket
