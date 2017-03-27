@@ -8,9 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-// 添加打印日志
-//#define WZDEBUG
-
 @class WWZUDPSocket;
 
 @protocol WZUDPSocketDelegate <NSObject>
@@ -21,10 +18,10 @@
  *  收到数据回调
  *
  *  @param udpSocket udpSocket
- *  @param message   message
+ *  @param data      receiveData
  *  @param host      ip
  */
-- (void)udpSocket:(WWZUDPSocket *)udpSocket didReceiveMessage:(NSString *)message fromHost:(NSString *)host;
+- (void)udpSocket:(WWZUDPSocket *)udpSocket didReceiveData:(NSData *)data fromHost:(NSString *)host;
 
 @end
 
@@ -33,7 +30,11 @@
 
 @property (nonatomic, weak) id<WZUDPSocketDelegate> delegate;
 
-+ (instancetype)updSocketWithPort:(uint16_t)port delegate:(id<WZUDPSocketDelegate>)delegate;
+/**
+ *  开始监听
+ *  @param port  监听的端口号
+ */
+- (void)startListen:(uint16_t)port;
 
 /**
  *  广播数据
@@ -42,12 +43,13 @@
 
 /**
  *  往指定ip发送数据
- *
- *  @param message message
- *  @param host    ip
  */
 - (void)sendMessage:(NSString *)message toHost:(NSString *)host port:(uint16_t)port;
 
+/**
+ *  往指定ip发送数据
+ */
+- (void)sendData:(NSData *)data toHost:(NSString *)host port:(uint16_t)port;
 /**
  *  关闭socket
  */

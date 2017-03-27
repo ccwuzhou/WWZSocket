@@ -9,25 +9,23 @@
 #import "WWZSocketRequest.h"
 #import "WWZTCPSocketClient.h"
 
-typedef void(^kCallBackBlock)(id) ;
+@interface WWZSocketRequestModel : NSObject
+
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) void(^success)(id);
+@property (nonatomic, copy) void(^failure)(NSError *);
+
+@end
+
+@implementation WWZSocketRequestModel
+@end
+
 
 NSString *const NOTI_PREFIX = @"wwz";
 
 @interface WWZSocketRequest ()
 
-/**
- *  所有请求api@[@"api": @[@"api", @"api"]]
- */
-@property (nonatomic, strong) NSMutableDictionary *mApiDict;
-
-/**
- *  成功回调字典[noti_name: kCallBackBlock]
- */
-@property (nonatomic, strong) NSMutableDictionary *mSuccessBlockDict;
-/**
- *  失败回调字典[noti_name: kCallBackBlock]
- */
-@property (nonatomic, strong) NSMutableDictionary *mFailureBlockDict;
+@property (nonatomic, strong) NSMutableArray *mRequestModels;
 
 /**
  *  超时时间
@@ -73,10 +71,7 @@ static WWZSocketRequest *_instance;
     self = [super init];
     if (self) {
         
-        _mApiDict = [NSMutableDictionary dictionary];
-        
-        _mSuccessBlockDict = [NSMutableDictionary dictionary];
-        _mFailureBlockDict = [NSMutableDictionary dictionary];
+        _mRequestModels = [NSMutableArray array];
         
         self.requestTimeout = 10;
         
@@ -195,25 +190,29 @@ static WWZSocketRequest *_instance;
     
     NSString *noti_name = [NSString stringWithFormat:@"%@_%@", NOTI_PREFIX, api];
     
-    if (success) {
-        self.mSuccessBlockDict[noti_name] = success;
-    }
-    if (failure) {
-        self.mFailureBlockDict[noti_name] = failure;
+    if (!success && !failure) {
+        
+        [socket sendDataToSocketWithData:data];
+        return;
     }
     
     // 添加通知
-    if (success||failure) {
-        [self p_insertApiWithKey:noti_name];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(p_get_result_noti:) name:noti_name object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(p_get_result_noti:) name:noti_name object:nil];
+    
     // 发送请求
     [socket sendDataToSocketWithData:data];
+    
+    
+    WWZSocketRequestModel *model = [[WWZSocketRequestModel alloc] init];
+    model.name = noti_name;
+    model.success = success;
+    model.failure = failure;
+    [self.mRequestModels addObject:model];
     
     // 超时处理
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.requestTimeout * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
-        if (!self.mFailureBlockDict[noti_name]) return ;
+        if (!model.failure) return ;
         
         NSNotification *noti = [NSNotification notificationWithName:noti_name object:nil userInfo:@{@"-1" : @"request time out"}];
         
@@ -229,64 +228,53 @@ static WWZSocketRequest *_instance;
  */
 - (void)p_get_result_noti:(NSNotification *)noti{
     
-    [self p_removeApiWithKey:noti.name];
-    
-    // 移除通知
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:noti.name object:nil];
-    
     if (!noti.userInfo || noti.userInfo.count == 0) return;
     
     NSInteger retcode = [[noti.userInfo allKeys][0] integerValue];
     
-    if (retcode == 0 || retcode == 100) {// 成功
+    WWZSocketRequestModel *removeModel = nil;
+    
+    for (WWZSocketRequestModel *model in self.mRequestModels) {
         
-        kCallBackBlock success = self.mSuccessBlockDict[noti.name];
-        
-        if (success) {
-            success(noti.object);
+        if (![model.name isEqualToString:noti.name]) {
+            continue;
         }
         
-    }else{// 失败
+        removeModel = model;
         
-        kCallBackBlock failure = self.mFailureBlockDict[noti.name];
-
-        if (failure) {
+        if (retcode == 0 || retcode == 100) {// 成功
+            
+            model.success(noti.object);
+            
+        }else {// 失败
+        
             NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:retcode userInfo:@{@"error": [noti.userInfo allValues][0]}];
-            failure(error);
+            model.failure(error);
         }
+        break;
     }
     // 移除block
-    [self.mSuccessBlockDict removeObjectForKey:noti.name];
-    [self.mFailureBlockDict removeObjectForKey:noti.name];
+    [self.mRequestModels removeObject:removeModel];
+    
+    if ([self p_canRemoveObserver:noti.name]) {
+        
+        // 移除通知
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:noti.name object:nil];
+    }
+    
 }
 
-- (void)p_insertApiWithKey:(NSString *)key{
-    
-    if (![self.mApiDict.allKeys containsObject:key]) {
+- (BOOL)p_canRemoveObserver:(NSString *)name{
+
+    for (WWZSocketRequestModel *model in self.mRequestModels) {
         
-        self.mApiDict[key] = [NSMutableArray arrayWithObject:key];
-    }else{
-        
-        NSMutableArray *mArr = self.mApiDict[key];
-        [mArr addObject:key];
+        if ([model.name isEqualToString:name]) {
+            return NO;
+        }
     }
+    return YES;
 }
 
-- (void)p_removeApiWithKey:(NSString *)key{
-    
-    if (![_mApiDict.allKeys containsObject:key]) return;
-    
-    NSMutableArray *mArr = _mApiDict[key];
-    
-    if (mArr.count <= 1) {
-        
-        [_mApiDict removeObjectForKey:key];
-        
-    }else{
-        
-        [mArr removeObjectAtIndex:0];
-    }
-}
 #pragma mark - help
 /**
  *  格式化指令
