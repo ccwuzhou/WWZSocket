@@ -28,11 +28,6 @@ NSString *const NOTI_PREFIX = @"wwz";
 @property (nonatomic, strong) NSMutableArray *mRequestModels;
 
 /**
- *  超时时间
- */
-@property (nonatomic, assign) NSTimeInterval requestTimeout;
-
-/**
  *  socket client
  */
 @property (nonatomic, strong) WWZTCPSocketClient *tcpSocket;

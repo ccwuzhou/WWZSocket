@@ -15,6 +15,13 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
 @interface WWZSocketRequest : NSObject
 
 /**
+ *  超时时间
+ */
+@property (nonatomic, assign) NSTimeInterval requestTimeout;
+
++ (instancetype)shareInstance;
+
+/**
  *  设置socket及协议格式参数
  *
  *  @param tcpSocket WWZTCPSocketClient

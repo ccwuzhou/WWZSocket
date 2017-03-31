@@ -10,7 +10,7 @@
 
 @class WWZUDPSocket;
 
-@protocol WZUDPSocketDelegate <NSObject>
+@protocol WWZUDPSocketDelegate <NSObject>
 
 @optional
 
@@ -28,7 +28,7 @@
 
 @interface WWZUDPSocket : NSObject
 
-@property (nonatomic, weak) id<WZUDPSocketDelegate> delegate;
+@property (nonatomic, weak) id<WWZUDPSocketDelegate> delegate;
 
 /**
  *  开始监听

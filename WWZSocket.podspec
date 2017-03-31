@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "WWZSocket"
-  s.version      = "1.2.1"
+  s.version      = "1.2.2"
   s.summary      = "A short description of WWZSocket."
   s.homepage     = "https://github.com/ccwuzhou/WWZSocket"
   s.license      = "MIT"
