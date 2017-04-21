@@ -15,23 +15,22 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
 @interface WWZSocketRequest : NSObject
 
 /**
+ *  socket client
+ */
+@property (nonatomic, strong) WWZTCPSocketClient *tcpSocket;
+
+/**
+ *  请求模版@"{\"app\":\"kjd\",\"co\":\"kjd\",\"api\":\"[api]\",\"data\":[param]}\n"
+ */
+@property (nonatomic, copy) NSString *api_model;
+
+/**
  *  超时时间
  */
 @property (nonatomic, assign) NSTimeInterval requestTimeout;
 
+
 + (instancetype)shareInstance;
-
-/**
- *  设置socket及协议格式参数
- *
- *  @param tcpSocket WWZTCPSocketClient
- *  @param app_param app default is "wwz"
- *  @param co_param  co default is "wwz"
- */
-- (void)setTcpSocket:(WWZTCPSocketClient *)tcpSocket
-           app_param:(NSString *)app_param
-            co_param:(NSString *)co_param;
-
 
 /**
  *  SOCKET请求

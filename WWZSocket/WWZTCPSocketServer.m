@@ -22,7 +22,7 @@ NSString *const SERVER_ERROR_NOTI_NAME = @"wwz_server_error_noti";
 /**
  *  json字符串格式化
  */
-- (NSString *)jsonFormat;
+- (NSString *)wwz_json;
 
 @end
 
@@ -154,7 +154,7 @@ static float read_timeout = -1;
     // data==>string
     NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     
-    WZLog(@"+++++socket host==>%@, data length==>%d, json format==>%@+++++", [sock connectedHost], (int)data.length, [text jsonFormat]);
+    WZLog(@"+++++socket host==>%@, data length==>%d, json format==>%@+++++", [sock connectedHost], (int)data.length, [text wwz_json]);
     
     if (!text||text.length == 0) {
         
@@ -326,7 +326,7 @@ static float read_timeout = -1;
 /**
  *  json字符串格式化
  */
-- (NSString *)jsonFormat{
+- (NSString *)wwz_json{
     
     NSString *spacing = @"\t";
     NSString *enterKey = @"\n";

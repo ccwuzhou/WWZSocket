@@ -15,9 +15,24 @@
 @property (nonatomic, copy) void(^success)(id);
 @property (nonatomic, copy) void(^failure)(NSError *);
 
+- (instancetype)initWithName:(NSString *)name success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
 @end
 
 @implementation WWZSocketRequestModel
+
+- (instancetype)initWithName:(NSString *)name success:(void(^)(id))success failure:(void(^)(NSError *))failure
+{
+    self = [super init];
+    if (self) {
+        
+        self.name = name;
+        self.success = success;
+        self.failure = failure;
+    }
+    return self;
+}
+
 @end
 
 
@@ -27,17 +42,6 @@ NSString *const NOTI_PREFIX = @"wwz";
 
 @property (nonatomic, strong) NSMutableArray *mRequestModels;
 
-/**
- *  socket client
- */
-@property (nonatomic, strong) WWZTCPSocketClient *tcpSocket;
-
-/**
- *  其它请求参数
- */
-@property (nonatomic, copy) NSString *app_param;
-
-@property (nonatomic, copy) NSString *co_param;
 @end
 
 @implementation WWZSocketRequest
@@ -69,25 +73,11 @@ static WWZSocketRequest *_instance;
         _mRequestModels = [NSMutableArray array];
         
         self.requestTimeout = 10;
-        
-        self.app_param = @"wwz";
-        self.co_param = @"wwz";
+
     }
     return self;
 }
-/**
- *  参数设置
- *
- *  @param tcpSocket tcpSocket
- *  @param app_param app_param
- *  @param co_param  co_param
- */
-- (void)setTcpSocket:(WWZTCPSocketClient *)tcpSocket app_param:(NSString *)app_param co_param:(NSString *)co_param{
-    
-    self.tcpSocket = tcpSocket;
-    self.app_param = app_param;
-    self.co_param = co_param;
-}
+
 /**
  *  SOCKET请求
  *  @param api          接口名
@@ -198,21 +188,22 @@ static WWZSocketRequest *_instance;
     [socket sendDataToSocketWithData:data];
     
     
-    WWZSocketRequestModel *model = [[WWZSocketRequestModel alloc] init];
-    model.name = noti_name;
-    model.success = success;
-    model.failure = failure;
+    WWZSocketRequestModel *model = [[WWZSocketRequestModel alloc] initWithName:noti_name success:success failure:failure];
+    
     [self.mRequestModels addObject:model];
     
     // 超时处理
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.requestTimeout * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
-        if (!model.failure) return ;
-        
-        NSNotification *noti = [NSNotification notificationWithName:noti_name object:nil userInfo:@{@"-1" : @"request time out"}];
-        
-        [self p_get_result_noti:noti];
-        
+        for (WWZSocketRequestModel *model in self.mRequestModels) {
+            
+            if ([model.name isEqualToString:noti_name] && model.failure) {
+                
+                NSNotification *noti = [NSNotification notificationWithName:noti_name object:nil userInfo:nil];
+                
+                [self p_get_result_noti:noti];
+            }
+        }
     });
 }
 #pragma mark - 通知
@@ -222,10 +213,6 @@ static WWZSocketRequest *_instance;
  *  @param noti @{retcode : retmsg}
  */
 - (void)p_get_result_noti:(NSNotification *)noti{
-    
-    if (!noti.userInfo || noti.userInfo.count == 0) return;
-    
-    NSInteger retcode = [[noti.userInfo allKeys][0] integerValue];
     
     WWZSocketRequestModel *removeModel = nil;
     
@@ -237,13 +224,13 @@ static WWZSocketRequest *_instance;
         
         removeModel = model;
         
-        if (retcode == 0 || retcode == 100) {// 成功
+        if (noti.object) {// 成功
             
             model.success(noti.object);
             
         }else {// 失败
         
-            NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:retcode userInfo:@{@"error": [noti.userInfo allValues][0]}];
+            NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{@"error": @"request time out"}];
             model.failure(error);
         }
         break;
@@ -283,7 +270,7 @@ static WWZSocketRequest *_instance;
     
     NSString *param = [[[[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\n" withString:@""] stringByReplacingOccurrencesOfString:@"  \"" withString:@"\""] stringByReplacingOccurrencesOfString:@" : " withString:@":"];
     
-    return [NSString stringWithFormat:@"{\"app\":\"%@\",\"co\":\"%@\",\"api\":\"%@\",\"data\":%@}\n", self.app_param, self.co_param, apiName, param];
+    return [[self.api_model stringByReplacingOccurrencesOfString:@"[api]" withString:apiName] stringByReplacingOccurrencesOfString:@"[param]" withString:param];
 }
 
 

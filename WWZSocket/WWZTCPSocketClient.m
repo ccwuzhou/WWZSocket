@@ -9,15 +9,15 @@
 #import "WWZTCPSocketClient.h"
 #import <CocoaAsyncSocket/GCDAsyncSocket.h>
 
-#ifdef DEBUG // 调试
-
-#define WZLog(fmt, ...) NSLog((@"%s " fmt), __PRETTY_FUNCTION__, ##__VA_ARGS__)
-
-#else // 发布
-
-#define WZLog(...)
-
-#endif
+//#ifdef DEBUG // 调试
+//
+//#define WZLog(fmt, ...) NSLog((@"%s " fmt), __PRETTY_FUNCTION__, ##__VA_ARGS__)
+//
+//#else // 发布
+//
+//#define WZLog(...)
+//
+//#endif
 
 // G-C-D
 // 主线程
@@ -59,7 +59,7 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
     NSError *error = nil;
     
     if (![self.socket connectToHost:[self p_convertedHostFromHost:host] onPort:port withTimeout:WWZ_TCPSOCKET_CONNECT_TIMEOUT error:&error]||error) {
-        WZLog(@"connect fail error：%@", error);
+        NSLog(@"connect fail error：%@", error);
     }
 }
 
@@ -70,7 +70,7 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
         
         [self.socket disconnect];
         
-        WZLog(@"disconnect socket");
+        NSLog(@"disconnect socket");
     }
 }
 
@@ -83,7 +83,7 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
     if ([string rangeOfString:@"'"].length>0) {
         string = [string stringByReplacingOccurrencesOfString:@"'" withString:@""];
     }
-    WZLog(@"%@", string);
+//    WZLog(@"%@", string);
     // 根据服务器要求发送固定格式的数据
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
     
@@ -101,7 +101,7 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
 #pragma mark - 连接成功回调
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port{
     
-    WZLog(@"+++connect to server success+++");
+    NSLog(@"+++connect to server success+++");
     
     _isConnecting = NO;
     
@@ -117,7 +117,7 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
 #pragma mark - socket断线回调
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err{
 
-    WZLog(@"+++socket disconnect+++");
+    NSLog(@"+++socket disconnect+++");
     
     _isConnecting = NO;
     
@@ -158,7 +158,7 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
     // data==>string
     NSString *readString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     
-    WZLog(@"+++++read data length==>%d+++++", (int)data.length);
+//    NSLog(@"+++++read data length==>%d+++++", (int)data.length);
     
     if (!readString||readString.length == 0) {// data转string失败
         
@@ -245,10 +245,10 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
     NSString *ip;
     
     if (address6) {
-        WZLog(@"===ipv6===：%@",[GCDAsyncSocket hostFromAddress:address6]);
+        NSLog(@"===ipv6===：%@",[GCDAsyncSocket hostFromAddress:address6]);
         ip = [GCDAsyncSocket hostFromAddress:address6];
     }else {
-        WZLog(@"===ipv4===：%@",[GCDAsyncSocket hostFromAddress:address4]);
+        NSLog(@"===ipv4===：%@",[GCDAsyncSocket hostFromAddress:address4]);
         ip = [GCDAsyncSocket hostFromAddress:address4];
     }
     
