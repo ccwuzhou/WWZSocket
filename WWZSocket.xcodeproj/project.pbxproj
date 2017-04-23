@@ -8,18 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		12132155157635C32682893E /* libPods-WWZSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 33C1B78A36A6A1CACA4672AD /* libPods-WWZSocket.a */; };
+		1803DFF31EAC3B4500515ED6 /* WWZSocketPong.h in Headers */ = {isa = PBXBuildFile; fileRef = 1803DFF11EAC3B4500515ED6 /* WWZSocketPong.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1803DFF41EAC3B4500515ED6 /* WWZSocketPong.m in Sources */ = {isa = PBXBuildFile; fileRef = 1803DFF21EAC3B4500515ED6 /* WWZSocketPong.m */; };
 		B094F1D01E6E864100D5380E /* WWZSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1CE1E6E864100D5380E /* WWZSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B094F1DE1E6E865500D5380E /* WWZSocketRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1D61E6E865500D5380E /* WWZSocketRequest.h */; };
+		B094F1DE1E6E865500D5380E /* WWZSocketRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1D61E6E865500D5380E /* WWZSocketRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B094F1DF1E6E865500D5380E /* WWZSocketRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B094F1D71E6E865500D5380E /* WWZSocketRequest.m */; };
-		B094F1E01E6E865500D5380E /* WWZTCPSocketClient.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1D81E6E865500D5380E /* WWZTCPSocketClient.h */; };
+		B094F1E01E6E865500D5380E /* WWZTCPSocketClient.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1D81E6E865500D5380E /* WWZTCPSocketClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B094F1E11E6E865500D5380E /* WWZTCPSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = B094F1D91E6E865500D5380E /* WWZTCPSocketClient.m */; };
-		B094F1E21E6E865500D5380E /* WWZTCPSocketServer.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1DA1E6E865500D5380E /* WWZTCPSocketServer.h */; };
+		B094F1E21E6E865500D5380E /* WWZTCPSocketServer.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1DA1E6E865500D5380E /* WWZTCPSocketServer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B094F1E31E6E865500D5380E /* WWZTCPSocketServer.m in Sources */ = {isa = PBXBuildFile; fileRef = B094F1DB1E6E865500D5380E /* WWZTCPSocketServer.m */; };
-		B094F1E41E6E865500D5380E /* WWZUDPSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1DC1E6E865500D5380E /* WWZUDPSocket.h */; };
+		B094F1E41E6E865500D5380E /* WWZUDPSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = B094F1DC1E6E865500D5380E /* WWZUDPSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B094F1E51E6E865500D5380E /* WWZUDPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = B094F1DD1E6E865500D5380E /* WWZUDPSocket.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1803DFF11EAC3B4500515ED6 /* WWZSocketPong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WWZSocketPong.h; sourceTree = "<group>"; };
+		1803DFF21EAC3B4500515ED6 /* WWZSocketPong.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WWZSocketPong.m; sourceTree = "<group>"; };
 		33C1B78A36A6A1CACA4672AD /* libPods-WWZSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WWZSocket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B094F1CB1E6E864100D5380E /* WWZSocket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WWZSocket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B094F1CE1E6E864100D5380E /* WWZSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WWZSocket.h; sourceTree = "<group>"; };
@@ -77,6 +81,7 @@
 		B094F1CD1E6E864100D5380E /* WWZSocket */ = {
 			isa = PBXGroup;
 			children = (
+				B094F1CE1E6E864100D5380E /* WWZSocket.h */,
 				B094F1D61E6E865500D5380E /* WWZSocketRequest.h */,
 				B094F1D71E6E865500D5380E /* WWZSocketRequest.m */,
 				B094F1D81E6E865500D5380E /* WWZTCPSocketClient.h */,
@@ -85,7 +90,8 @@
 				B094F1DB1E6E865500D5380E /* WWZTCPSocketServer.m */,
 				B094F1DC1E6E865500D5380E /* WWZUDPSocket.h */,
 				B094F1DD1E6E865500D5380E /* WWZUDPSocket.m */,
-				B094F1CE1E6E864100D5380E /* WWZSocket.h */,
+				1803DFF11EAC3B4500515ED6 /* WWZSocketPong.h */,
+				1803DFF21EAC3B4500515ED6 /* WWZSocketPong.m */,
 				B094F1CF1E6E864100D5380E /* Info.plist */,
 			);
 			path = WWZSocket;
@@ -111,6 +117,7 @@
 				B094F1E21E6E865500D5380E /* WWZTCPSocketServer.h in Headers */,
 				B094F1E41E6E865500D5380E /* WWZUDPSocket.h in Headers */,
 				B094F1DE1E6E865500D5380E /* WWZSocketRequest.h in Headers */,
+				1803DFF31EAC3B4500515ED6 /* WWZSocketPong.h in Headers */,
 				B094F1D01E6E864100D5380E /* WWZSocket.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -223,6 +230,7 @@
 				B094F1E11E6E865500D5380E /* WWZTCPSocketClient.m in Sources */,
 				B094F1DF1E6E865500D5380E /* WWZSocketRequest.m in Sources */,
 				B094F1E51E6E865500D5380E /* WWZUDPSocket.m in Sources */,
+				1803DFF41EAC3B4500515ED6 /* WWZSocketPong.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,6 +345,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = WWZSocket/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = cn.tijio.WWZSocket;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -356,6 +365,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = WWZSocket/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = cn.tijio.WWZSocket;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -382,6 +392,7 @@
 				B094F1D51E6E864100D5380E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

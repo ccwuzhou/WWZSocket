@@ -23,3 +23,4 @@ FOUNDATION_EXPORT const unsigned char WWZSocketVersionString[];
 
 #import "WWZSocketRequest.h"
 
+#import "WWZSocketPong.h"
