@@ -1,0 +1,16 @@
+PODS:
+  - WWZSocket (0.1.0)
+
+DEPENDENCIES:
+  - WWZSocket (from `../`)
+
+EXTERNAL SOURCES:
+  WWZSocket:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  WWZSocket: ff050f0cdead4e0a1a318fc28c30100b518c95b5
+
+PODFILE CHECKSUM: 39e2f2957259d14d8a91754ca83beb3153ab9fc8
+
+COCOAPODS: 1.5.3

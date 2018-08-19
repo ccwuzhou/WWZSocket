@@ -7,8 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-
 @class WWZTCPSocketClient;
+
+// socket连接状态
+typedef NS_ENUM(NSUInteger, WWZSocketStatus) {
+    WWZSocketStatusNotConnect,
+    WWZSocketStatusConnecting,
+    WWZSocketStatusConnected,
+};
 
 @protocol WWZTCPSocketDelegate <NSObject>
 
@@ -42,15 +48,7 @@
 
 @property (nonatomic, strong) NSData *endKeyData;
 
-/**
- *  正在连接中
- */
-@property (nonatomic, assign, readonly) BOOL isConnecting;
-
-/**
- *  socket连接状态
- */
-@property (nonatomic, assign, readonly) BOOL isConnected;
+@property (nonatomic, assign, readonly) WWZSocketStatus socketStatus;
 
 /**
  *  connect socket

@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'WWZSocket_Example' do
+  pod 'WWZSocket', :path => '../'
+
+  target 'WWZSocket_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
