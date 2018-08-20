@@ -210,7 +210,6 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
         //1.创建串行队列，队列(queue)中的任务只会顺序执行
         dispatch_queue_t socketQueue = dispatch_queue_create("FirstSerialQueue", DISPATCH_QUEUE_SERIAL);
         _socket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:socketQueue];
-        
         _socket.IPv4PreferredOverIPv6 = NO;
     }
     return _socket;

@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
 @class WWZTCPSocketClient;
+@class WWZApiModel;
 
 extern NSString *const NOTI_PREFIX;// 通知前缀
 
@@ -23,12 +23,12 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
  *  请求模版@"{\"app\":\"kjd\",\"co\":\"kjd\",\"api\":\"[api]\",\"data\":[param]}\n"
  */
 @property (nonatomic, copy) NSString *api_model;
+@property (nonatomic, strong) WWZApiModel *apiModel;
 
 /**
  *  超时时间
  */
 @property (nonatomic, assign) NSTimeInterval requestTimeout;
-
 
 + (instancetype)shareInstance;
 
@@ -43,6 +43,7 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
      parameters:(id)parameters
         success:(void(^)(id result))success
         failure:(void(^)(NSError *error))failure;
+
 /**
  *  SOCKET请求
  *
@@ -70,6 +71,7 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
         message:(NSString *)message
         success:(void(^)(id result))success
         failure:(void(^)(NSError *error))failure;
+
 /**
  *  SOCKET请求
  *
@@ -84,6 +86,7 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
         message:(NSString *)message
         success:(void(^)(id result))success
         failure:(void(^)(NSError *error))failure;
+
 /**
  *  SOCKET请求
  *
