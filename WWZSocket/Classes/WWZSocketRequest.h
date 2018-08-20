@@ -7,10 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "WWZResponseModel.h"
 @class WWZTCPSocketClient;
-@class WWZApiModel;
-
-extern NSString *const NOTI_PREFIX;// 通知前缀
 
 @interface WWZSocketRequest : NSObject
 
@@ -18,12 +16,6 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
  *  socket client
  */
 @property (nonatomic, strong) WWZTCPSocketClient *tcpSocket;
-
-/**
- *  请求模版@"{\"app\":\"kjd\",\"co\":\"kjd\",\"api\":\"[api]\",\"data\":[param]}\n"
- */
-@property (nonatomic, copy) NSString *api_model;
-@property (nonatomic, strong) WWZApiModel *apiModel;
 
 /**
  *  超时时间
@@ -41,7 +33,7 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
  */
 - (void)request:(NSString *)api
      parameters:(id)parameters
-        success:(void(^)(id result))success
+        success:(void(^)(WWZResponseModel *result))success
         failure:(void(^)(NSError *error))failure;
 
 /**
@@ -56,7 +48,7 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
 - (void)request:(WWZTCPSocketClient *)socket
             api:(NSString *)api
      parameters:(id)parameters
-        success:(void(^)(id result))success
+        success:(void(^)(WWZResponseModel *result))success
         failure:(void(^)(NSError *error))failure;
 
 /**
@@ -69,7 +61,7 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
  */
 - (void)request:(NSString *)api
         message:(NSString *)message
-        success:(void(^)(id result))success
+        success:(void(^)(WWZResponseModel *result))success
         failure:(void(^)(NSError *error))failure;
 
 /**
@@ -84,7 +76,7 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
 - (void)request:(WWZTCPSocketClient *)socket
             api:(NSString *)api
         message:(NSString *)message
-        success:(void(^)(id result))success
+        success:(void(^)(WWZResponseModel *result))success
         failure:(void(^)(NSError *error))failure;
 
 /**
@@ -99,6 +91,6 @@ extern NSString *const NOTI_PREFIX;// 通知前缀
 - (void)request:(WWZTCPSocketClient *)socket
             api:(NSString *)api
            data:(NSData *)data
-        success:(void(^)(id result))success
+        success:(void(^)(WWZResponseModel *result))success
         failure:(void(^)(NSError *error))failure;
 @end

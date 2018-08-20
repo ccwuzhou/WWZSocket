@@ -7,11 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface WWZApiModel : NSObject
+// @"{\"app\":\"kjd\",\"co\":\"kjd\",\"api\":\"[api]\",\"data\":[param]}\n"
+@interface WWZRequestModel : NSObject
 
-@property (nonatomic, copy) NSString *app;
 @property (nonatomic, copy) NSString *co;
 @property (nonatomic, copy) NSString *api;
 @property (nonatomic, strong) id data;
 
+- (instancetype)initWithApi:(NSString *)api data:(id)data;
 @end

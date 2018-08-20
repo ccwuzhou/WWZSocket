@@ -8,7 +8,7 @@
 
 #import "WWZTCPSocketClient.h"
 #import <CocoaAsyncSocket/GCDAsyncSocket.h>
-
+#import "WWZResponseModel.h"
 //#ifdef DEBUG // 调试
 //
 //#define WZLog(fmt, ...) NSLog((@"%s " fmt), __PRETTY_FUNCTION__, ##__VA_ARGS__)
@@ -26,7 +26,6 @@
 @interface WWZTCPSocketClient ()<GCDAsyncSocketDelegate>
 
 @property (nonatomic, strong) GCDAsyncSocket *socket;
-
 @property (nonatomic, assign) BOOL isConnecting;
 
 @end
@@ -38,12 +37,7 @@ static int const WWZ_TCPSOCKET_READ_TIMEOUT = -1;
 static int const WWZ_TCPSOCKET_WRITE_TAG = 1;
 static int const WWZ_TCPSOCKET_READ_TAG = 0;
 
-- (void)setEndKeyString:(NSString *)endKeyString{
-    _endKeyString = endKeyString;
-    self.endKeyData = [endKeyString dataUsingEncoding:NSUTF8StringEncoding];
-}
-
-#pragma mark - 连接socket
+#pragma mark - public method
 - (void)connectToHost:(NSString*)host onPort:(uint16_t)port{
     _isConnecting = YES;
     if (self.socket.isConnected) {
@@ -58,7 +52,6 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
     }
 }
 
-#pragma mark - 断开socket
 - (void)disconnectSocket{
     if (self.socket.isConnected) {
         [self.socket disconnect];
@@ -66,7 +59,6 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
     }
 }
 
-#pragma mark - 发送请求
 - (void)sendDataToSocketWithString:(NSString *)string{
     if (!string||string.length == 0) {
         return;
@@ -80,12 +72,14 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
     [self sendDataToSocketWithData:data];
     
 }
+
 - (void)sendDataToSocketWithData:(NSData *)data{
     if (!data||data.length == 0) {
         return;
     }
     [self.socket writeData:data withTimeout:-1 tag:WWZ_TCPSOCKET_WRITE_TAG];
 }
+
 #pragma mark - GCDAsyncSocketDelegate
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port{
     NSLog(@"+++connect to server success+++");
@@ -98,7 +92,7 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
     [self p_readData];
 
 }
-#pragma mark - socket断线回调
+
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err{
     NSLog(@"+++socket disconnect+++");
     _isConnecting = NO;
@@ -108,13 +102,12 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
         });
     }
 }
-#pragma mark - 写成功
+
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag{
     // 写成功后开始读数据
     [self p_readData];
 }
 
-#pragma mark - 收到数据回调
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag{
     if (!data || data.length == 0) {
         [self p_readData];
@@ -151,10 +144,14 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
             });
         }
     }else{// json解析成功
+        WWZResponseModel *responseModel = [[WWZResponseModel alloc] initWithResult:result];
         if ([self.tcpDelegate respondsToSelector:@selector(tcpSocket:didReadResult:)]) {
             WZ_MAIN_GCD(^{
-                [self.tcpDelegate tcpSocket:self didReadResult:result];
+                [self.tcpDelegate tcpSocket:self didReadResult:responseModel];
             });
+        }
+        if (responseModel.api.length > 0) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", NOTI_PREFIX, responseModel.api] object:responseModel];
         }
     }
     // 读完当前数据后继续读数
@@ -201,6 +198,13 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
     }
     return ip;
 }
+
+#pragma mark - setter
+- (void)setEndKeyString:(NSString *)endKeyString{
+    _endKeyString = endKeyString;
+    self.endKeyData = [endKeyString dataUsingEncoding:NSUTF8StringEncoding];
+}
+
 #pragma mark - getter
 /**
  *  socket

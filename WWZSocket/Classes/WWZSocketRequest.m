@@ -8,20 +8,22 @@
 
 #import "WWZSocketRequest.h"
 #import "WWZTCPSocketClient.h"
-#import "WWZApiModel.h"
+#import "WWZRequestModel.h"
+#import <objc/runtime.h>
+
 @interface WWZSocketRequestModel : NSObject
 
 @property (nonatomic, copy) NSString *name;
-@property (nonatomic, copy) void(^success)(id);
+@property (nonatomic, copy) void(^success)(WWZResponseModel *);
 @property (nonatomic, copy) void(^failure)(NSError *);
 
-- (instancetype)initWithName:(NSString *)name success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+- (instancetype)initWithName:(NSString *)name success:(void(^)(WWZResponseModel *))success failure:(void(^)(NSError *))failure;
 
 @end
 
 @implementation WWZSocketRequestModel
 
-- (instancetype)initWithName:(NSString *)name success:(void(^)(id))success failure:(void(^)(NSError *))failure
+- (instancetype)initWithName:(NSString *)name success:(void(^)(WWZResponseModel *))success failure:(void(^)(NSError *))failure
 {
     self = [super init];
     if (self) {
@@ -34,8 +36,6 @@
 
 @end
 
-
-NSString *const NOTI_PREFIX = @"wwz";
 
 @interface WWZSocketRequest ()
 
@@ -81,7 +81,7 @@ static WWZSocketRequest *_instance;
  */
 - (void)request:(NSString *)api
     parameters:(id)parameters
-       success:(void(^)(id result))success
+       success:(void(^)(WWZResponseModel *result))success
        failure:(void(^)(NSError *error))failure{
     if (!self.tcpSocket) {
         NSLog(@"请先调用(-setTcpSocket:app_param:co_param:)设置socket相关参数");
@@ -102,7 +102,7 @@ static WWZSocketRequest *_instance;
 - (void)request:(WWZTCPSocketClient *)socket
             api:(NSString *)api
      parameters:(id)parameters
-        success:(void(^)(id result))success
+        success:(void(^)(WWZResponseModel *result))success
         failure:(void(^)(NSError *error))failure{
     NSString *message = [self p_formatCmdWithApiName:api parameters:parameters];
     if (!message) {
@@ -122,7 +122,7 @@ static WWZSocketRequest *_instance;
  */
 - (void)request:(NSString *)api
         message:(NSString *)message
-        success:(void(^)(id result))success
+        success:(void(^)(WWZResponseModel *result))success
         failure:(void(^)(NSError *error))failure{
     if (!self.tcpSocket) {
         NSLog(@"请先调用(-setTcpSocket:app_param:co_param:)设置socket相关参数");
@@ -142,7 +142,7 @@ static WWZSocketRequest *_instance;
 - (void)request:(WWZTCPSocketClient *)socket
             api:(NSString *)api
         message:(NSString *)message
-        success:(void(^)(id result))success
+        success:(void(^)(WWZResponseModel *result))success
         failure:(void(^)(NSError *error))failure{
     NSData *data = [[message stringByReplacingOccurrencesOfString:@"'" withString:@""] dataUsingEncoding:NSUTF8StringEncoding];
     [self request:socket api:api data:data success:success failure:failure];
@@ -160,7 +160,7 @@ static WWZSocketRequest *_instance;
 - (void)request:(WWZTCPSocketClient *)socket
            api:(NSString *)api
           data:(NSData *)data
-       success:(void(^)(id result))success
+       success:(void(^)(WWZResponseModel *result))success
        failure:(void(^)(NSError *error))failure{
     NSString *noti_name = [NSString stringWithFormat:@"%@_%@", NOTI_PREFIX, api];
     if (!success && !failure) {
@@ -227,10 +227,33 @@ static WWZSocketRequest *_instance;
  */
 - (NSString *)p_formatCmdWithApiName:(NSString *)apiName parameters:(id)parameters{
     NSError *error = nil;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parameters options:NSJSONWritingPrettyPrinted error:&error];
+    WWZRequestModel *requestModel = [[WWZRequestModel alloc] initWithApi:apiName data:parameters];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[self dictionayFromModelPropertiesWithObj:requestModel] options:NSJSONWritingPrettyPrinted error:&error];
     if (error) return nil;
     NSString *param = [[[[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\n" withString:@""] stringByReplacingOccurrencesOfString:@"  \"" withString:@"\""] stringByReplacingOccurrencesOfString:@" : " withString:@":"];
-    return [[self.api_model stringByReplacingOccurrencesOfString:@"[api]" withString:apiName] stringByReplacingOccurrencesOfString:@"[param]" withString:param];
+    return [NSString stringWithFormat:@"%@\n",param];
+}
+
+- (NSMutableDictionary *)dictionayFromModelPropertiesWithObj:(id)obj{
+    NSMutableDictionary *propsDic = [NSMutableDictionary dictionary];
+    unsigned int outCount, i;
+    // class:获取哪个类的成员属性列表
+    // count:成员属性总数
+    // 拷贝属性列表
+    objc_property_t *properties = class_copyPropertyList([obj class], &outCount);
+    for (i = 0; i<outCount; i++) {
+        objc_property_t property = properties[i];
+        const char* char_f = property_getName(property);
+        // 属性名
+        NSString *propertyName = [NSString stringWithUTF8String:char_f];
+        // 属性值
+        id propertyValue = [obj valueForKey:(NSString *)propertyName];
+        // 设置KeyValues
+        if (propertyValue) [propsDic setObject:propertyValue forKey:propertyName];
+    }
+    // 需手动释放 不受ARC约束
+    free(properties);
+    return propsDic;
 }
 
 @end
