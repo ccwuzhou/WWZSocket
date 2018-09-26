@@ -151,7 +151,10 @@ static int const WWZ_TCPSOCKET_READ_TAG = 0;
             });
         }
         if (responseModel.api.length > 0) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", NOTI_PREFIX, responseModel.api] object:responseModel];
+            NSString *notiName = [NSString stringWithFormat:@"%@_%@", NOTI_PREFIX, responseModel.api];
+            WZ_MAIN_GCD(^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:notiName object:responseModel];
+            });
         }
     }
     // 读完当前数据后继续读数
