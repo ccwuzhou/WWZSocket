@@ -1,9 +1,8 @@
 //
 //  WWZSocketRequest.m
-//  wwz
+//  WWZSocket
 //
 //  Created by wwz on 16/6/17.
-//  Copyright © 2016年 cn.szwwz. All rights reserved.
 //
 
 #import "WWZSocketRequest.h"
@@ -37,7 +36,9 @@
 @end
 
 
-@interface WWZSocketRequest ()
+@interface WWZSocketRequest (){
+    dispatch_queue_t _queue;
+}
 
 @property (nonatomic, strong) NSMutableArray *mRequestModels;
 
@@ -68,6 +69,7 @@ static WWZSocketRequest *_instance;
     if (self) {
         _mRequestModels = [NSMutableArray array];
         self.requestTimeout = 10;
+        _queue = dispatch_queue_create("WWZSocketRequestQueue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -80,9 +82,9 @@ static WWZSocketRequest *_instance;
  *  @param failure      failure回调
  */
 - (void)request:(NSString *)api
-    parameters:(id)parameters
-       success:(void(^)(WWZResponseModel *result))success
-       failure:(void(^)(NSError *error))failure{
+     parameters:(id)parameters
+        success:(void(^)(WWZResponseModel *result))success
+        failure:(void(^)(NSError *error))failure{
     if (!self.tcpSocket) {
         NSLog(@"请先调用(-setTcpSocket:app_param:co_param:)设置socket相关参数");
         return;
@@ -158,10 +160,10 @@ static WWZSocketRequest *_instance;
  *  @param failure      failure回调
  */
 - (void)request:(WWZTCPSocketClient *)socket
-           api:(NSString *)api
-          data:(NSData *)data
-       success:(void(^)(WWZResponseModel *result))success
-       failure:(void(^)(NSError *error))failure{
+            api:(NSString *)api
+           data:(NSData *)data
+        success:(void(^)(WWZResponseModel *result))success
+        failure:(void(^)(NSError *error))failure{
     NSString *noti_name = [NSString stringWithFormat:@"%@_%@", NOTI_PREFIX, api];
     if (!success && !failure) {
         [socket sendDataToSocketWithData:data];
@@ -190,26 +192,28 @@ static WWZSocketRequest *_instance;
  *  @param noti @{retcode : retmsg}
  */
 - (void)p_get_result_noti:(NSNotification *)noti{
-    WWZSocketRequestModel *removeModel = nil;
-    for (WWZSocketRequestModel *model in self.mRequestModels) {
-        if (![model.name isEqualToString:noti.name]) {
-            continue;
+    dispatch_sync(_queue, ^{
+        WWZSocketRequestModel *removeModel = nil;
+        for (WWZSocketRequestModel *model in self.mRequestModels) {
+            if (![model.name isEqualToString:noti.name]) {
+                continue;
+            }
+            removeModel = model;
+            if (noti.object) {// 成功
+                model.success(noti.object);
+            }else {// 失败
+                NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{@"error": @"request time out"}];
+                model.failure(error);
+            }
+            break;
         }
-        removeModel = model;
-        if (noti.object) {// 成功
-            model.success(noti.object);
-        }else {// 失败
-            NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{@"error": @"request time out"}];
-            model.failure(error);
+        // 移除block
+        [self.mRequestModels removeObject:removeModel];
+        if ([self p_canRemoveObserver:noti.name]) {
+            // 移除通知
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:noti.name object:nil];
         }
-        break;
-    }
-    // 移除block
-    [self.mRequestModels removeObject:removeModel];
-    if ([self p_canRemoveObserver:noti.name]) {
-        // 移除通知
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:noti.name object:nil];
-    }
+    });
 }
 
 - (BOOL)p_canRemoveObserver:(NSString *)name{

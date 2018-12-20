@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-// @"{\"app\":\"kjd\",\"co\":\"kjd\",\"api\":\"[api]\",\"data\":[param]}\n"
+// @"{\"app\":\"wwz\",\"co\":\"wwz\",\"api\":\"[api]\",\"data\":[param]}\n"
 @interface WWZRequestModel : NSObject
 
 @property (nonatomic, copy) NSString *co;

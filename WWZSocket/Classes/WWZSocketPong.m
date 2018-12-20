@@ -3,7 +3,6 @@
 //  WWZSocket
 //
 //  Created by apple on 2017/4/23.
-//  Copyright © 2017年 tijio. All rights reserved.
 //
 
 #import "WWZSocketPong.h"

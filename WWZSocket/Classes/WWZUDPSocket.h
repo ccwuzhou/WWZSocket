@@ -1,9 +1,8 @@
 //
 //  WWZUDPSocket.h
-//  wwz
+//  WWZSocket
 //
 //  Created by wwz on 16/6/18.
-//  Copyright © 2016年 cn.szwwz. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

@@ -1,10 +1,14 @@
 PODS:
   - CocoaAsyncSocket (7.6.3)
-  - WWZSocket (1.0):
+  - WWZSocket (1.2.1):
     - CocoaAsyncSocket
 
 DEPENDENCIES:
   - WWZSocket (from `../`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - CocoaAsyncSocket
 
 EXTERNAL SOURCES:
   WWZSocket:
@@ -12,8 +16,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
-  WWZSocket: 10c1e9e802f715d51ac5e6ec6c833466d60c0204
+  WWZSocket: a48d6f24a0a110e97378dc597fc88c83eda92459
 
 PODFILE CHECKSUM: 39e2f2957259d14d8a91754ca83beb3153ab9fc8
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.5.3

@@ -1,9 +1,8 @@
 //
 //  WWZTCPSocketClient.h
-//  SmartHome_iPad
+//  WWZSocket
 //
 //  Created by wwz on 16/3/2.
-//  Copyright © 2016年 zgkjd. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
