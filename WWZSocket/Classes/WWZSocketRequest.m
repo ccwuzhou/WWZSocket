@@ -13,6 +13,7 @@
 @interface WWZSocketRequestModel : NSObject
 
 @property (nonatomic, copy) NSString *name;
+@property (nonatomic, assign) NSInteger timestamp;
 @property (nonatomic, copy) void(^success)(WWZResponseModel *);
 @property (nonatomic, copy) void(^failure)(NSError *);
 
@@ -27,6 +28,7 @@
     self = [super init];
     if (self) {
         self.name = name;
+        self.timestamp = [[NSDate date] timeIntervalSince1970];
         self.success = success;
         self.failure = failure;
     }
@@ -41,6 +43,7 @@
 }
 
 @property (nonatomic, strong) NSMutableArray *mRequestModels;
+@property (nonatomic, strong) NSTimer *timer;
 
 @end
 
@@ -68,8 +71,9 @@ static WWZSocketRequest *_instance;
     self = [super init];
     if (self) {
         _mRequestModels = [NSMutableArray array];
-        self.requestTimeout = 10;
+        _requestTimeout = 10;
         _queue = dispatch_queue_create("WWZSocketRequestQueue", DISPATCH_QUEUE_SERIAL);
+        _timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerAction) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -175,15 +179,15 @@ static WWZSocketRequest *_instance;
     [socket sendDataToSocketWithData:data];
     WWZSocketRequestModel *model = [[WWZSocketRequestModel alloc] initWithName:noti_name success:success failure:failure];
     [self.mRequestModels addObject:model];
-    // 超时处理
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.requestTimeout * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        for (WWZSocketRequestModel *model in self.mRequestModels) {
-            if ([model.name isEqualToString:noti_name] && model.failure) {
-                NSNotification *noti = [NSNotification notificationWithName:noti_name object:nil userInfo:nil];
-                [self p_get_result_noti:noti];
-            }
-        }
-    });
+//    // 超时处理
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.requestTimeout * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        for (WWZSocketRequestModel *model in self.mRequestModels) {
+//            if ([model.name isEqualToString:noti_name] && model.failure) {
+//                NSNotification *noti = [NSNotification notificationWithName:noti_name object:nil userInfo:nil];
+//                [self p_get_result_noti:noti];
+//            }
+//        }
+//    });
 }
 #pragma mark - 通知
 /**
@@ -225,6 +229,19 @@ static WWZSocketRequest *_instance;
     return YES;
 }
 
+#pragma mark - private method
+- (void)timerAction{
+    NSMutableArray<WWZSocketRequestModel *> *mArr = [NSMutableArray array];
+    for (WWZSocketRequestModel *model in self.mRequestModels) {
+        if ([[NSDate date] timeIntervalSince1970] - model.timestamp > self.requestTimeout && model.failure) {
+            [mArr addObject:model];
+        }
+    }
+    for (WWZSocketRequestModel *model in mArr) {
+        NSNotification *noti = [NSNotification notificationWithName:model.name object:nil userInfo:nil];
+        [self p_get_result_noti:noti];
+    }
+}
 #pragma mark - help
 /**
  *  格式化指令

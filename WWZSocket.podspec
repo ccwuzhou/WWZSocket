@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'WWZSocket'
-  s.version          = '1.3.3'
+  s.version          = '1.3.4'
   s.summary          = 'A short description of WWZSocket.'
 
   s.description      = <<-DESC
